@@ -1,6 +1,6 @@
 // Assembles website/*.html from _src/pages/*.html fragments so the nav and footer live in one place.
 // Run:  node _src/build.mjs            (output is plain static HTML next to this folder: host the repository root anywhere)
-//       SITE_URL=https://example.com node _src/build.mjs     (adds canonical links, og:url, sitemap.xml and robots.txt)
+//       SITE_URL=https://example.com node _src/build.mjs     (the public address; defaults to the GitHub Pages address)
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +8,9 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, "..");
 const SITE = "Showwork";
-const SITE_URL = (process.env.SITE_URL || "").replace(/\/$/, "");
+// The public address, used for canonical links, the sitemap and the share image (LinkedIn and X need an absolute URL for it).
+// Override it when the site moves, for example to a custom domain:  SITE_URL=https://showwork.com node _src/build.mjs
+const SITE_URL = (process.env.SITE_URL || "https://ashurajchandra.github.io/showwork-website").replace(/\/$/, "");
 
 const pages = [
   { file: "index.html", src: "home", nav: "", title: "Showwork: AI agents that deliver Jira tickets as proven pull requests", desc: "A team of AI agents turns a ticket into a pull request, tested in a real browser, with people approving at three gates. It never merges." },
@@ -50,6 +52,12 @@ const css = ["styles.css", "extras.css"].map((f) => readFileSync(join(out, "asse
 const pageUrl = (p) => `${SITE_URL}/${p.file === "index.html" ? "" : p.file}`;
 const extraHead = (p) => [
   SITE_URL && !p.noindex ? `<link rel="canonical" href="${pageUrl(p)}"><meta property="og:url" content="${pageUrl(p)}">` : "",
+  SITE_URL && !p.noindex ? [
+    `<meta property="og:site_name" content="${SITE}">`,
+    `<meta property="og:image" content="${SITE_URL}/assets/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`,
+    `<meta property="og:image:alt" content="Showwork: a ticket goes in, a pull request that proves it works comes out">`,
+    `<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${p.title}"><meta name="twitter:description" content="${p.desc}"><meta name="twitter:image" content="${SITE_URL}/assets/og-image.png">`,
+  ].join("\n") : "",
   p.noindex ? `<meta name="robots" content="noindex">` : "",
 ].filter(Boolean).join("\n");
 

@@ -1,6 +1,6 @@
 # Deploys the static site to GitHub Pages on every push to main.
 # One-time setup in the repository: Settings > Pages > Build and deployment > Source: "GitHub Actions".
-# Optional: set a repository variable SITE_URL (for example https://showwork.example.com) for canonical links, sitemap.xml and robots.txt.
+# Optional: set a repository variable SITE_URL (for example https://showwork.example.com) once you have a custom domain; it defaults to the GitHub Pages address.
 name: Deploy site
 on:
   push:

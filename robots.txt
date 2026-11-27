@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ashurajchandra.github.io/showwork-website/sitemap.xml

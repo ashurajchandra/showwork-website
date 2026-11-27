@@ -39,7 +39,7 @@ Optional, once the public address is known:
 SITE_URL=https://your-domain.com node _src/build.mjs
 ```
 
-This adds canonical links and `og:url`, and writes `sitemap.xml` and `robots.txt`.
+The build uses it for canonical links, the share image (`assets/og-image.png`, shown when the site is posted on LinkedIn, Slack or X), `sitemap.xml` and `robots.txt`. It defaults to the GitHub Pages address, so set it when you move to a custom domain. Re-render the share image with `npm run og-image`.
 
 ## Before going live
 
