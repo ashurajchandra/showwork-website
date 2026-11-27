@@ -43,7 +43,7 @@ This adds canonical links and `og:url`, and writes `sitemap.xml` and `robots.txt
 
 ## Before going live
 
-1. **Demo form.** In `assets/site.js`, `submitLead()` decides where a demo request goes. The default only opens the visitor's mail client with a placeholder address (`demo@example.com`). Point it at a form service (Formspree, Basin, Google Apps Script) or your own endpoint with `fetch()`.
+1. **Demo form.** Requests are delivered by [Web3Forms](https://web3forms.com), which emails each submission to the address registered with the access key in `assets/site.js` (`WEB3FORMS_KEY`). The key is public by design. In the Web3Forms dashboard, restrict it to your live domain, and send yourself one test request after deploying. To change the destination, create a new key and replace it in `site.js`.
 2. **Figures and labels.** Numbers in the home "Real runs" table come from real runs. The simulator and the example screenshots are illustrative and are labelled that way. If you replace them with genuine run output, update the labels.
 3. **Roadmap page.** Check `_src/pages/roadmap.frag` and remove anything you are not ready to promise.
 

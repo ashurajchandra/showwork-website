@@ -14,10 +14,11 @@
 </div></section>
 
 <section id="sandbox"><div class="wrap">
-  <div class="section-head rv"><span class="eyebrow">Safety model</span><h2>Five rules the product is built on.</h2></div>
+  <div class="section-head rv"><span class="eyebrow">Safety model</span><h2>Seven rules the product is built on.</h2></div>
   <div class="grid g3">
     <div class="card rv"><h4>Agents never approve their own work</h4><p>Gates are workflow steps. The definition validator rejects any agent that is given the approval gate, and a test fails if that rule is removed.</p></div>
-    <div class="card rv"><h4>Generated code never runs on your host</h4><p>Tests and browsers run in Docker: no network, read-only repository, no capabilities, non-root, resource limits and a hard deadline.</p></div>
+    <div class="card rv"><h4>A private workspace for every run</h4><p>Each run works on its own copy of your repository. Agents reach it only through one path checker, and never see the original repository or anything else on the machine. Two runs never share files.</p></div>
+    <div class="card rv"><h4>Generated code never runs on your host</h4><p>Every test and every browser run starts in a fresh, throwaway Docker container: no network, read-only root, no capabilities, non-root, resource limits and a hard deadline. It is removed when it finishes.</p></div>
     <div class="card rv"><h4>The model chooses data, not code</h4><p>The test command is fixed. Browser tests are a validated list of steps from a closed vocabulary, so there is no model-written script to execute.</p></div>
     <div class="card rv"><h4>Sandbox output is untrusted</h4><p>File names, magic bytes and sizes are checked. The app under test and the browser harness are separate containers, so generated code cannot tamper with evidence. Everything served back is owner-scoped.</p></div>
     <div class="card rv"><h4>Prompt injection is handled structurally</h4><p>External text (tickets, pages, code comments) is marked as data, tool results are labelled, and risky actions need approval. We tested with hostile tickets, pages and code comments. Guards do not depend on the model behaving.</p></div>
