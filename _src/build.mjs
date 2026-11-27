@@ -48,15 +48,18 @@ const footer = `<footer><div class="wrap">
 
 const css = ["styles.css", "extras.css"].map((f) => readFileSync(join(out, "assets", f), "utf8")).join("\n");
 
+// Bump this when assets/og-image.png changes: LinkedIn, Slack and X cache share images by URL.
+const OG_VERSION = 2;
+
 // head tags that depend on the deployment: the canonical address (when SITE_URL is set) and noindex for the 404 page
 const pageUrl = (p) => `${SITE_URL}/${p.file === "index.html" ? "" : p.file}`;
 const extraHead = (p) => [
   SITE_URL && !p.noindex ? `<link rel="canonical" href="${pageUrl(p)}"><meta property="og:url" content="${pageUrl(p)}">` : "",
   SITE_URL && !p.noindex ? [
     `<meta property="og:site_name" content="${SITE}">`,
-    `<meta property="og:image" content="${SITE_URL}/assets/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`,
+    `<meta property="og:image" content="${SITE_URL}/assets/og-image.png?v=${OG_VERSION}"><meta property="og:image:width" content="2400"><meta property="og:image:height" content="1260">`,
     `<meta property="og:image:alt" content="Showwork: a ticket goes in, a pull request that proves it works comes out">`,
-    `<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${p.title}"><meta name="twitter:description" content="${p.desc}"><meta name="twitter:image" content="${SITE_URL}/assets/og-image.png">`,
+    `<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${p.title}"><meta name="twitter:description" content="${p.desc}"><meta name="twitter:image" content="${SITE_URL}/assets/og-image.png?v=${OG_VERSION}">`,
   ].join("\n") : "",
   p.noindex ? `<meta name="robots" content="noindex">` : "",
 ].filter(Boolean).join("\n");
