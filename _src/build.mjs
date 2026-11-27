@@ -48,6 +48,10 @@ const footer = `<footer><div class="wrap">
 
 const css = ["styles.css", "extras.css"].map((f) => readFileSync(join(out, "assets", f), "utf8")).join("\n");
 
+// Umami Cloud (cookie-free analytics). data-domains makes it count only the real site, not localhost; do-not-track respects the browser setting.
+const UMAMI_ID = "8dc05784-6493-47a3-8129-710ed13225b4";
+const analytics = `<script defer src="https://cloud.umami.is/script.js" data-website-id="${UMAMI_ID}" data-domains="${new URL(SITE_URL).hostname}" data-do-not-track="true"></script>`;
+
 // Bump this when assets/og-image.png changes: LinkedIn, Slack and X cache share images by URL.
 const OG_VERSION = 2;
 
@@ -74,6 +78,7 @@ for (const p of pages) {
 <meta name="theme-color" content="#f7f8fc">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">${extraHead(p)}
 <style>${css}</style>
+${analytics}
 </head><body>
 ${header(p.nav)}
 <main id="main">

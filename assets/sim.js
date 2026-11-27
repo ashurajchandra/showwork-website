@@ -4,6 +4,8 @@
   var root = document.getElementById("sim");
   if (!root) return;
   var $ = function (s, r) { return (r || root).querySelector(s); };
+  // analytics events (site.js defines swTrack; it does nothing when analytics is blocked or not loaded)
+  var track = function (name, data) { try { if (window.swTrack) window.swTrack(name, data); } catch (e) {} };
 
   var STAGES = [
     { id: "req", label: "Requirements", sum: "The PM reads the ticket and writes the acceptance criteria. You approve them." },
@@ -69,7 +71,7 @@
 
   function reset() {
     clearTimeout(st.timer);
-    st.bug = $("#so-bug").checked; st.items = script(st.bug); st.i = 0; st.playing = false; st.waiting = false; st.sec = 0; st.cost = 0; st.sel = "req"; st.follow = true; st.shots = []; st.logs = [];
+    st.bug = $("#so-bug").checked; st.items = script(st.bug); st.i = 0; st.playing = false; st.waiting = false; st.sec = 0; st.cost = 0; st.sel = "req"; st.follow = true; st.shots = []; st.logs = []; st.started = false;
     st.status = {}; STAGES.forEach(function (s) { st.status[s.id] = "pending"; });
     elGate.hidden = true; elEnd.classList.remove("show"); elDiffBox.innerHTML = "";
     elArt.innerHTML = '<div class="s-empty">Screenshots and videos appear here as the run produces them.</div>';
@@ -135,6 +137,7 @@
   function tick() {
     if (st.waiting || st.i >= st.items.length) return;
     var it = st.items[st.i];
+    if (!st.started) { st.started = true; track("simulator-start", { bug: st.bug }); }
     st.i++; st.sec += it.sec || 0; st.cost += it.cost || 0;
     if (it.done) { STAGES.forEach(function (s) { st.status[s.id] = "done"; }); }
     else stageStatuses(it.st, it.gate ? "waiting" : "active");
@@ -149,7 +152,7 @@
       $("#s-gate-items").innerHTML = it.gate.items.map(function (x) { return "<li>" + x + "</li>"; }).join("");
       elGate.hidden = false; elBtnPlay.textContent = "▶ Resume"; $("#sb-next").disabled = true; return;
     }
-    if (it.done) { setState("good", "Completed"); st.playing = false; elBtnPlay.textContent = "↺ Replay"; $("#sb-next").disabled = true; elEnd.classList.add("show"); return; }
+    if (it.done) { track("simulator-complete", { bug: st.bug }); setState("good", "Completed"); st.playing = false; elBtnPlay.textContent = "↺ Replay"; $("#sb-next").disabled = true; elEnd.classList.add("show"); return; }
     setState(it.kind === "bad" ? "bad" : "busy", it.kind === "bad" ? "QA found a bug" : "Running");
     if (st.playing) schedule();
   }
@@ -158,6 +161,7 @@
 
   function approve() {
     var it = st.items[st.i - 1];
+    track("simulator-gate-approved", { gate: it.gate ? it.gate.title : "" });
     elGate.hidden = true; st.waiting = false; st.status[it.st] = "done";
     var row = it; row.d = "Approved by you · bound to what you saw"; row.kind = "ok"; row.ic = "✓";
     renderAll(); $("#sb-next").disabled = false; setState("busy", "Running"); st.playing = true; elBtnPlay.textContent = "❚❚ Pause"; schedule();

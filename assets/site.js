@@ -1,5 +1,14 @@
 // Showwork marketing site: tiny progressive enhancement. The site works with JS off (except the form's mailto fallback).
 (function () {
+  // Umami analytics (cookie-free). swTrack(name, data) records a named event; it is a no-op when the script is blocked or not loaded.
+  window.swTrack = function (name, data) {
+    try { if (window.umami && typeof window.umami.track === "function") window.umami.track(name, data); } catch (e) {}
+  };
+  // clicks on any "Book a demo" style link, with the page they came from
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href="demo.html"]');
+    if (a) window.swTrack("cta-demo-click", { page: location.pathname.split("/").pop() || "index.html" });
+  });
   // mobile menu
   var btn = document.querySelector(".menu-btn"), links = document.querySelector(".links");
   if (btn && links) btn.addEventListener("click", function () {
@@ -34,8 +43,10 @@
     var button = form.querySelector("button[type=submit]"), label = button.textContent, error = document.getElementById("lead-error");
     error.style.display = "none"; button.disabled = true; button.textContent = "Sending…";
     submitLead(data).then(function () {
+      window.swTrack("demo-request-submitted");
       form.style.display = "none"; document.getElementById("lead-sent").classList.add("show");
     }).catch(function () {
+      window.swTrack("demo-request-failed");
       error.style.display = "block"; button.disabled = false; button.textContent = label;
     });
   });
