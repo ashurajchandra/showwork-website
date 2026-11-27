@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en" data-look="product"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QA that proves it worked | Showwork</title><meta name="description" content="Independent AI QA writes test cases from the acceptance criteria, runs them in a real browser at three screen sizes, and reads results from recorded runs.">
+<meta property="og:title" content="QA that proves it worked | Showwork"><meta property="og:description" content="Independent AI QA writes test cases from the acceptance criteria, runs them in a real browser at three screen sizes, and reads results from recorded runs."><meta property="og:type" content="website">
+<meta name="theme-color" content="#f7f8fc">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>/* Showwork marketing site — plain CSS, no build step, no external requests. */
+:root{
+  --paper:#F6F3EC; --paper-2:#EFEADF; --card:#FFFFFF; --ink:#14130F; --ink-2:#47443B; --ink-3:#7A7567;
+  --line:#DDD6C6; --accent:#C23F18; --accent-ink:#8F2A0B; --accent-bg:#FBE6DC;
+  --ok:#1F7A4D; --ok-bg:#DDF0E5; --warn:#9A6A00; --warn-bg:#FBEFCB; --night:#14130F; --night-2:#201E18;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:14px; --shadow:0 1px 0 rgba(20,19,15,.04),0 8px 28px -12px rgba(20,19,15,.18);
+  --nav-bg:rgba(246,243,236,.9); --ok-line:#B7DEC8; --accent-line:#F2C2AF; --warn-line:#EBD38B; --on-accent:#fff;
+  --night-ink:#F3EFE4; --night-mute:#BDB6A3; --night-line:#3A372D; --night-eyebrow:#FF8A5E; --code-bg:var(--paper-2);
+  --head-weight:600; --head-track:-.015em; --btn-radius:999px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;display:block} a{color:inherit}
+.wrap{width:min(1160px,92vw);margin-inline:auto}
+.narrow{width:min(780px,92vw);margin-inline:auto}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:var(--head-weight);line-height:1.12;letter-spacing:var(--head-track);margin:0 0 .5em}
+h1{font-size:clamp(2.4rem,5.6vw,4.3rem)} h2{font-size:clamp(1.8rem,3.4vw,2.7rem)} h3{font-size:1.3rem} h4{font-size:1.05rem;font-family:var(--sans);letter-spacing:0}
+p{margin:0 0 1em} .lede{font-size:1.2rem;color:var(--ink-2);max-width:62ch}
+.eyebrow{font:600 .78rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1.1rem;display:block}
+.mono{font-family:var(--mono)} .muted{color:var(--ink-3)} .center{text-align:center} .center .lede{margin-inline:auto}
+section{padding:clamp(3.5rem,8vw,6.5rem) 0} .tight{padding:clamp(2rem,4vw,3rem) 0}
+.alt{background:var(--paper-2)} .dark{background:var(--night);color:var(--night-ink)}
+.dark .lede,.dark .muted{color:var(--night-mute)} .dark .eyebrow{color:var(--night-eyebrow)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.brand{display:flex;align-items:center;gap:.6rem;font:700 1.15rem var(--serif);text-decoration:none}
+.brand i{width:26px;height:26px;border-radius:7px;background:var(--brand-mark,var(--ink));position:relative;display:block}
+.brand i::after{content:"";position:absolute;inset:7px 6px 7px 8px;border:2.5px solid var(--paper);border-left:0;border-top:0;transform:rotate(45deg) scale(.7);transform-origin:center}
+.links{display:flex;align-items:center;gap:1.6rem;font-size:.95rem}
+.links a{text-decoration:none;color:var(--ink-2)} .links a:hover,.links a[aria-current]{color:var(--ink)}
+.links a[aria-current]{font-weight:600}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:8px;padding:.45rem .7rem;font:inherit;cursor:pointer}
+@media(max-width:860px){.menu-btn{display:block}.links{position:absolute;top:64px;left:0;right:0;background:var(--paper);flex-direction:column;align-items:flex-start;padding:1rem 4vw 1.4rem;border-bottom:1px solid var(--line);display:none}.links.open{display:flex}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.35rem;border-radius:var(--btn-radius);font:600 .98rem var(--sans);text-decoration:none;border:1.5px solid var(--ink);cursor:pointer;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px)} .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn-ghost{background:transparent;color:var(--ink)} .dark .btn-ghost{color:var(--night-ink);border-color:var(--night-ink)}
+.btn-sm{padding:.5rem 1rem;font-size:.9rem}
+.cta-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
+
+/* hero */
+.hero{padding:clamp(3rem,7vw,5.5rem) 0 clamp(2.5rem,5vw,4rem);overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
+@media(max-width:940px){.hero-grid{grid-template-columns:1fr}}
+.hero h1 em{font-style:normal;color:var(--accent);background:linear-gradient(transparent 62%,var(--accent-bg) 62%)}
+.proofbar{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:2rem;font:500 .85rem var(--mono);color:var(--ink-2)}
+.proofbar span::before{content:"✓ ";color:var(--ok);font-weight:700}
+
+/* hero visual: ticket -> PR */
+.flow-vis{position:relative;display:grid;gap:14px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;box-shadow:var(--shadow);font-size:.92rem}
+.mini h5{margin:0 0 .4rem;font:600 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.mini .t{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.chip{font:500 .74rem var(--mono);padding:.22rem .55rem;border-radius:999px;background:var(--paper-2);border:1px solid var(--line)}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)} .chip.gate{background:var(--accent-bg);border-color:var(--accent-line);color:var(--accent-ink)}
+.chip.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.rail{display:flex;align-items:center;gap:.5rem;justify-content:center;font:600 .75rem var(--mono);color:var(--ink-3)}
+.rail b{width:2px;height:26px;background:repeating-linear-gradient(var(--ink-3) 0 4px,transparent 4px 8px)}
+.shots{display:grid;grid-template-columns:2.2fr 1.2fr .7fr;gap:8px;align-items:end;margin-top:.7rem}
+.shot{border:1px solid var(--line);border-radius:6px;background:linear-gradient(#fff,#F3EFE4);padding:5px;font:600 .6rem var(--mono);color:var(--ink-3)}
+.shot::before{content:"";display:block;height:8px;border-radius:2px;background:var(--ink);opacity:.85;margin-bottom:4px}
+.shot i{display:block;height:5px;border-radius:2px;background:var(--line);margin:3px 0}
+.shot.a{height:70px}.shot.b{height:92px}.shot.c{height:112px}
+
+/* grids & cards */
+.grid{display:grid;gap:1.3rem} .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:repeat(2,1fr)}} @media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow)}
+.card h3,.card h4{margin-bottom:.45em} .card p:last-child{margin-bottom:0}
+.card .ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--accent-bg);color:var(--accent-ink);font:700 1.1rem var(--mono);margin-bottom:1rem}
+.dark .card{background:var(--night-2);border-color:var(--night-line);box-shadow:none}
+.section-head{max-width:760px;margin-bottom:2.6rem} .center.section-head{margin-inline:auto}
+
+.stat{padding:1.4rem 0;border-top:2px solid var(--ink)} .stat b{display:block;font:600 clamp(2.2rem,4vw,3.3rem)/1 var(--serif);margin-bottom:.4rem}
+.dark .stat{border-color:var(--night-ink)}
+
+/* badges */
+.badge{display:inline-block;font:600 .68rem var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:.25rem .55rem;border-radius:6px;vertical-align:middle}
+.b-live{background:var(--ok-bg);color:var(--ok)} .b-val{background:var(--warn-bg);color:var(--warn)} .b-road{background:var(--paper-2);color:var(--ink-3);border:1px solid var(--line)}
+.b-gate{background:var(--accent);color:#fff}
+
+/* pipeline overview rail (home) */
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;margin-top:1rem}
+.pipe::before{content:"";position:absolute;left:4%;right:4%;top:26px;height:2px;background:var(--ink-3);opacity:.5}
+.pn{position:relative;padding:0 .6rem;text-align:center}
+.pn .dot{width:54px;height:54px;border-radius:50%;margin:0 auto 1rem;display:grid;place-items:center;background:var(--paper);border:2px solid var(--ink);font:700 .95rem var(--mono);position:relative;z-index:1}
+.pn.gate .dot{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:14px;transform:rotate(45deg)} .pn.gate .dot span{transform:rotate(-45deg)}
+.pn h4{margin-bottom:.3rem} .pn p{font-size:.88rem;color:var(--ink-2);margin:0}
+@media(max-width:900px){.pipe{grid-template-columns:1fr;gap:1.4rem}.pipe::before{left:26px;right:auto;top:0;bottom:0;width:2px;height:auto}
+ .pn{display:grid;grid-template-columns:54px 1fr;gap:0 1rem;text-align:left;padding:0}.pn .dot{margin:0;grid-row:1/3}}
+
+/* deep timeline (pipeline page) */
+.tl{position:relative;margin-left:.5rem;border-left:2px solid var(--line);padding-left:2.2rem}
+.st{position:relative;padding:0 0 3rem}
+.st::before{content:attr(data-n);position:absolute;left:calc(-2.2rem - 17px);top:0;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .78rem var(--mono)}
+.st.gate::before{background:var(--accent);border-radius:9px;transform:rotate(45deg);font-size:0} .st.gate::after{content:"✋";position:absolute;left:calc(-2.2rem - 10px);top:5px;font-size:.9rem}
+.st h3{margin-bottom:.3em} .who{font:600 .76rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.7rem;display:block}
+.st-body{display:grid;grid-template-columns:1.4fr 1fr;gap:1.6rem}
+@media(max-width:860px){.st-body{grid-template-columns:1fr}}
+.kv{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;font-size:.93rem}
+.kv h5{margin:0 0 .5rem;font:600 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.kv ul{margin:0;padding-left:1.1rem} .kv li{margin-bottom:.35rem}
+ul.tick{list-style:none;padding:0;margin:0 0 1em} ul.tick li{padding-left:1.7rem;position:relative;margin-bottom:.55rem} ul.tick li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+ul.cross li::before{content:"✕";color:var(--accent)}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:.95rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{text-align:left;padding:.8rem 1rem;border-bottom:1px solid var(--line);vertical-align:top} .tbl th{background:var(--paper-2);font:600 .74rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.tbl tr:last-child td{border-bottom:0} .scroll{overflow-x:auto}
+.callout{border-left:4px solid var(--accent);background:var(--accent-bg);padding:1.1rem 1.3rem;border-radius:0 12px 12px 0;margin:1.5rem 0}
+.callout.ok{border-color:var(--ok);background:var(--ok-bg)} .callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout p:last-child{margin:0}
+code{font:.88em var(--mono);background:var(--paper-2);padding:.12em .4em;border-radius:5px;border:1px solid var(--line)}
+.dark code{background:var(--night-2);border-color:var(--night-line)}
+.quote{font:500 clamp(1.3rem,2.4vw,1.8rem)/1.35 var(--serif);margin:0}
+
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem}
+.tab{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.5rem 1rem;font:600 .88rem var(--sans);cursor:pointer;color:var(--ink-2)}
+.tab[aria-selected=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.panel{display:none} .panel.show{display:block}
+
+/* faq */
+details.faq{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.3rem;margin-bottom:.7rem}
+details.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+details.faq summary::after{content:"+";font:600 1.3rem var(--mono);color:var(--accent)} details.faq[open] summary::after{content:"–"}
+details.faq p{margin:.8rem 0 0;color:var(--ink-2)}
+
+/* form */
+form.lead{display:grid;gap:1rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:1.8rem;box-shadow:var(--shadow)}
+form.lead .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem} @media(max-width:620px){form.lead .row{grid-template-columns:1fr}}
+label{display:grid;gap:.35rem;font:600 .85rem var(--sans)} label span{color:var(--ink-3);font-weight:500}
+input,select,textarea{font:inherit;padding:.7rem .85rem;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--accent-bg);border-color:var(--accent)}
+.form-note{font-size:.85rem;color:var(--ink-3)} .hp{position:absolute;left:-9999px}
+.sent{display:none} .sent.show{display:block}
+
+/* cta band + footer */
+.band{background:var(--ink);color:var(--paper);border-radius:22px;padding:clamp(2rem,5vw,3.5rem);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1.5rem}
+.band h2{margin:0;max-width:20ch} .band .btn-ghost{color:var(--paper);border-color:var(--paper)} .band .btn-primary{color:#fff}
+footer{border-top:1px solid var(--line);padding:3rem 0 2rem;font-size:.92rem;color:var(--ink-2)}
+.fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:2rem} @media(max-width:760px){.fgrid{grid-template-columns:1fr 1fr}}
+footer h5{margin:0 0 .7rem;font:600 .75rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink)} footer a{display:block;text-decoration:none;margin-bottom:.4rem} footer a:hover{color:var(--accent)}
+.fine{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-3)}
+
+/* reveal */
+
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.skip{position:absolute;left:-999px} .skip:focus{left:8px;top:8px;background:#fff;padding:.5rem;z-index:99}
+
+/* extras: real screenshots, lightbox, the look switch, the "Product" look (Showwork's own UI tokens) and the simulator. */
+
+
+/* ---------- real screenshots ---------- */
+.fig{margin:0}.fig figcaption{font-size:.86rem;color:var(--ink-3);margin-top:.6rem;line-height:1.45}
+.fig figcaption b{color:var(--ink-2)}
+.win{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+.win-bar{display:flex;align-items:center;gap:6px;padding:.55rem .8rem;background:var(--paper-2);border-bottom:1px solid var(--line);font:500 .72rem var(--mono);color:var(--ink-3)}
+.win-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.win-bar span{margin-left:.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.win img,.win video{width:100%;height:auto;display:block;background:#f6f7fb}
+.zoomable{cursor:zoom-in}
+.devices{--dh:340px;display:flex;flex-wrap:wrap;gap:1.2rem;align-items:flex-end}
+.devices>div{flex:0 0 auto}
+.devices .win{width:fit-content;max-width:100%}
+.devices .win img{height:var(--dh);width:auto;max-width:none;display:block}
+.devices .phone-frame{width:fit-content;max-width:100%}
+.devices .phone-frame img{height:var(--dh);width:auto;max-width:none;display:block}
+.hero-devices .devices,.split .devices{--dh:175px;gap:.9rem}
+@media(max-width:760px){.devices{--dh:230px}.split .devices{--dh:170px}}
+@media(max-width:430px){.devices{--dh:170px}.split .devices{--dh:130px}}
+.devices .tag{display:inline-block;font:600 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.4rem}
+.phone-frame{border:6px solid var(--ink);border-radius:22px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.phone-frame img{width:100%;display:block}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}@media(max-width:700px){.pair{grid-template-columns:1fr}}
+.diffnote{display:inline-block;margin-top:.4rem;font:600 .72rem var(--mono);padding:.2rem .5rem;border-radius:6px}
+.lb{position:fixed;inset:0;z-index:100;background:rgba(10,10,20,.82);display:none;align-items:center;justify-content:center;padding:4vw;cursor:zoom-out}
+.lb.open{display:flex}.lb img{max-width:100%;max-height:92vh;border-radius:10px;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb button{position:absolute;top:14px;right:18px;background:#fff;border:0;border-radius:999px;width:38px;height:38px;font-size:1.2rem;cursor:pointer}
+.real-note{display:inline-flex;gap:.45rem;align-items:center;font:600 .74rem var(--mono);color:var(--ok);background:var(--ok-bg);padding:.3rem .65rem;border-radius:999px;margin-bottom:1rem}
+.real-note::before{content:"●";font-size:.6rem}
+
+/* ---------- the Product look: Showwork's own interface tokens (indigo, cool canvas, Inter, 12-20px radii) ---------- */
+:root[data-look=product]{
+  --paper:#f7f8fc; --paper-2:#f3f4fb; --card:#ffffff; --ink:#14152b; --ink-2:#3f4466; --ink-3:#5e6382; --line:#e4e6f0;
+  --accent:#5b4fe0; --accent-ink:#2a2594; --accent-bg:#ecebfe; --accent-line:#cdc8f7; --on-accent:#fff;
+  --ok:#0f7a47; --ok-bg:#e6f7ef; --ok-line:#bfe8d3; --warn:#8a5300; --warn-bg:#fff4d6; --warn-line:#e9b949;
+  --night:#0c0e1a; --night-2:#141729; --night-ink:#ecedfb; --night-mute:#a1a6c4; --night-line:#272b47; --night-eyebrow:#aaa4ff;
+  --serif:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:16px; --shadow:0 1px 2px rgba(20,21,43,.05),0 8px 24px rgba(20,21,43,.07);
+  --nav-bg:rgba(255,255,255,.78); --head-weight:700; --head-track:-.025em; --btn-radius:12px;
+  --brand-mark:linear-gradient(135deg,#5b4fe0,#4f44d8);
+}
+:root[data-look=product] body{font-size:16px;background:#f7f8fc}
+:root[data-look=product] .nav{backdrop-filter:blur(18px) saturate(1.5)}
+:root[data-look=product] .btn-ghost{border-color:var(--line);background:#fff}
+:root[data-look=product] .btn-primary:hover{background:#4c40cf;border-color:#4c40cf}
+:root[data-look=product] .hero h1 em{background:linear-gradient(transparent 64%,#e3e0fc 64%);color:#4f44d8}
+:root[data-look=product] .eyebrow,:root[data-look=product] .who,:root[data-look=product] .tbl th,:root[data-look=product] .kv h5{letter-spacing:.08em}
+:root[data-look=product] .card,:root[data-look=product] .mini,:root[data-look=product] .kv,:root[data-look=product] .tbl{border-color:var(--line)}
+:root[data-look=product] .card .ico{background:var(--accent-bg);color:#4f44d8;border-radius:12px}
+:root[data-look=product] .pn.gate .dot,:root[data-look=product] .st.gate::before{background:#d9a21b;border-color:#d9a21b}
+:root[data-look=product] .chip.gate,:root[data-look=product] .b-gate{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+:root[data-look=product] .b-gate{border:1px solid var(--warn-line)}
+:root[data-look=product] .chip,:root[data-look=product] .badge{border-radius:999px}
+:root[data-look=product] .st::before{background:#5b4fe0}
+:root[data-look=product] .tl{border-left-color:#cdc8f7}
+:root[data-look=product] .stat{border-top-color:#5b4fe0}
+:root[data-look=product] .band{background:linear-gradient(135deg,#2a2594,#5b4fe0)}
+:root[data-look=product] .band .btn-primary{background:#fff;color:#2a2594;border-color:#fff}
+:root[data-look=product] .callout{border-color:#5b4fe0;background:#ecebfe}
+:root[data-look=product] .callout.warn{border-color:#e9b949;background:#fff4d6}
+:root[data-look=product] .callout.ok{border-color:#12844d;background:#e6f7ef}
+:root[data-look=product] .phone-frame{border-color:#14152b}
+:root[data-look=product] .proofbar span::before{color:#12844d}
+
+/* ---------- the simulator: always drawn in the product's own look, whatever the site look is ---------- */
+.sim{--s-canvas:#f7f8fc;--s-bg:#fff;--s-surface:#f3f4fb;--s-hover:#eaecf7;--s-fg:#14152b;--s-muted:#5e6382;--s-border:#e4e6f0;
+  --s-brand:#5b4fe0;--s-brand-text:#4f44d8;--s-brand-ink:#2a2594;--s-soft:#ecebfe;--s-line:#cdc8f7;
+  --s-ok:#0f7a47;--s-ok-bg:#e6f7ef;--s-warn:#8a5300;--s-warn-bg:#fff4d6;--s-warn-line:#e9b949;--s-danger:#b42318;--s-danger-bg:#fdecea;
+  font:14px/1.5 "Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--s-fg)}
+.sim *{box-sizing:border-box}
+.sim-controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem}
+.sim-controls .grow{flex:1}
+.sbtn{font:600 14px "Inter",ui-sans-serif,system-ui,sans-serif;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#14152b;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.sbtn:hover{background:#f3f4fb}.sbtn.primary{background:#5b4fe0;border-color:#5b4fe0;color:#fff}.sbtn.primary:hover{background:#4c40cf}
+.sbtn:disabled{opacity:.45;cursor:not-allowed}.sbtn.sm{height:34px;padding:0 12px;font-size:13px}
+.sim-opt{display:inline-flex;align-items:center;gap:.5rem;font:600 13px "Inter",system-ui,sans-serif;color:#3f4466;padding:0 .6rem;height:40px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.sim-opt select,.sim-opt input{accent-color:#5b4fe0;font:inherit;border:0;background:none;padding:0;color:inherit}
+.sim-app{border:1px solid #d9dcee;border-radius:20px;background:var(--s-canvas);overflow:hidden;box-shadow:0 8px 20px rgba(20,21,43,.1),0 24px 56px rgba(20,21,43,.14);display:grid;grid-template-rows:56px 1fr;min-height:640px;position:relative}
+.s-top{display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid var(--s-border);background:rgba(255,255,255,.85);backdrop-filter:blur(18px) saturate(1.5)}
+.s-logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#5b4fe0,#4f44d8);display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px}
+.s-brand{font-size:19px;font-weight:700;letter-spacing:-.01em}.s-org{padding:3px 12px;border-radius:999px;background:var(--s-surface);color:var(--s-muted);font-size:12px;font-weight:600}
+.s-top .sp{flex:1}.s-meter{display:flex;gap:8px}.s-meter span{font:600 12px "Inter",system-ui,sans-serif;background:var(--s-surface);border-radius:999px;padding:4px 10px;color:var(--s-muted);font-variant-numeric:tabular-nums}
+.s-avatar{width:32px;height:32px;border-radius:50%;background:#5b4fe0;color:#fff;display:grid;place-items:center;font-weight:600;font-size:13px}
+.s-body{display:grid;grid-template-columns:200px 1fr;min-height:0}
+@media(max-width:900px){.s-body{grid-template-columns:1fr}.s-side{display:none}}
+.s-side{border-right:1px solid var(--s-border);background:var(--s-bg);padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+.s-nav{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;color:var(--s-muted);font-weight:500;font-size:14px}
+.s-nav.on{background:var(--s-soft);color:var(--s-brand-ink);font-weight:600}.s-nav b{margin-left:auto;background:#c0352b;color:#fff;border-radius:999px;font-size:11px;padding:0 6px;line-height:18px}
+.s-nav::before{content:"";width:8px;height:8px;border-radius:3px;background:currentColor;opacity:.55}
+.s-main{padding:20px 22px 26px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.s-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 16px;justify-content:space-between}
+.s-head h3{font:700 22px/1.25 "Inter",system-ui,sans-serif;letter-spacing:-.01em;margin:0}
+.s-sub{font-size:13px;color:var(--s-muted);margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font:600 13px "Inter",system-ui,sans-serif;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.busy{background:var(--s-soft);color:var(--s-brand-ink)}.pill.busy::before{animation:pulse 1.1s infinite}
+.pill.wait{background:var(--s-warn-bg);color:var(--s-warn)}.pill.good{background:var(--s-ok-bg);color:var(--s-ok)}.pill.bad{background:var(--s-danger-bg);color:var(--s-danger)}.pill.idle{background:var(--s-surface);color:var(--s-muted)}
+@keyframes pulse{50%{opacity:.25}}
+.s-stepper{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.s-stage{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--s-border);border-radius:12px;background:var(--s-bg);font:600 13px "Inter",system-ui,sans-serif;color:var(--s-muted);cursor:pointer;transition:.16s}
+.s-stage:hover{background:var(--s-surface)}
+.s-stage .d{width:18px;height:18px;border-radius:50%;border:2px solid #c9cde3;display:grid;place-items:center;font-size:10px;color:#fff}
+.s-stage.done .d{background:#12844d;border-color:#12844d}.s-stage.done .d::after{content:"✓"}
+.s-stage.active{background:var(--s-soft);border-color:var(--s-line);color:var(--s-brand-ink)}.s-stage.active .d{border-color:#5b4fe0;border-top-color:transparent;animation:spin .9s linear infinite}
+.s-stage.waiting{background:var(--s-warn-bg);border-color:var(--s-warn-line);color:var(--s-warn)}.s-stage.waiting .d{border-color:#d9a21b;background:#d9a21b}
+.s-stage.sel{outline:2px solid #5b4fe0;outline-offset:1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.s-cols{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;min-height:0}
+@media(max-width:1000px){.s-cols{grid-template-columns:1fr}}
+.s-card{background:var(--s-bg);border:1px solid var(--s-border);border-radius:16px;box-shadow:0 1px 2px rgba(20,21,43,.05);min-width:0}
+.s-card>header{padding:14px 16px 10px;border-bottom:1px solid var(--s-border)}
+.s-card>header h4{margin:0;font:700 16px "Inter",system-ui,sans-serif}.s-card>header p{margin:2px 0 0;font-size:13px;color:var(--s-muted)}
+.feed{padding:6px 0;max-height:430px;overflow:auto}
+.s-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;padding:10px 16px;align-items:start;animation:in .35s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.s-row .ic{width:26px;height:26px;border-radius:8px;background:var(--s-soft);color:var(--s-brand-text);display:grid;place-items:center;font:700 11px "Inter",system-ui,sans-serif}
+.s-row .ic.ok{background:var(--s-ok-bg);color:var(--s-ok)}.s-row .ic.bad{background:var(--s-danger-bg);color:var(--s-danger)}.s-row .ic.wait{background:var(--s-warn-bg);color:var(--s-warn)}
+.s-row .t{font-weight:600;font-size:14px}.s-row .d{font-size:13px;color:var(--s-muted);margin-top:1px}.s-row .m{font:500 12px "Inter",system-ui,sans-serif;color:var(--s-muted);font-variant-numeric:tabular-nums}
+.s-row code{font:12px ui-monospace,Menlo,monospace;background:#f4f5fb;padding:1px 6px;border-radius:6px;border:1px solid var(--s-border)}
+.s-row .quote{margin-top:6px;border-left:3px solid var(--s-line);padding:4px 10px;background:var(--s-surface);border-radius:0 8px 8px 0;font-size:13px;color:#3f4466}
+.s-empty{padding:28px 16px;text-align:center;color:var(--s-muted);font-size:13px}
+.s-tabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--s-border)}
+.s-tab{border:0;background:none;font:500 14px "Inter",system-ui,sans-serif;padding:7px 12px;border-radius:10px;color:var(--s-muted);cursor:pointer}.s-tab[aria-selected=true]{background:var(--s-soft);color:var(--s-brand-ink);font-weight:600}
+.s-panel{padding:14px 16px;display:none;max-height:430px;overflow:auto}.s-panel.show{display:block}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.thumbs figure{margin:0;border:1px solid var(--s-border);border-radius:10px;overflow:hidden;background:#fff;animation:in .4s both}
+.thumbs img{width:100%;display:block;cursor:zoom-in}.thumbs figcaption{font:600 11px "Inter",system-ui,sans-serif;padding:5px 8px;color:var(--s-muted)}
+.thumbs .wide{grid-column:1/-1}
+.log{font:12px/1.55 ui-monospace,Menlo,monospace;color:#3f4466}.log div{padding:2px 0;border-bottom:1px dashed var(--s-border)}.log b{color:var(--s-brand-text)}
+.diff{font:12px/1.5 ui-monospace,Menlo,monospace;border:1px solid var(--s-border);border-radius:10px;overflow:hidden;margin-top:8px}.diff div{padding:1px 10px;white-space:pre-wrap}.diff .a{background:#e6f7ef;color:#0b5a34}.diff .r{background:#fdecea;color:#8c1d14}.diff .h{background:var(--s-surface);color:var(--s-muted)}
+.gate-win{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,calc(100% - 28px));z-index:5;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border:1px solid var(--s-warn-line);border-radius:20px;box-shadow:0 8px 20px rgba(20,21,43,.12),0 24px 56px rgba(20,21,43,.2);padding:18px 20px;animation:in .35s both}
+.gate-win[hidden]{display:none}.gate-win h5{margin:6px 0 4px;font:700 17px "Inter",system-ui,sans-serif}.gate-win p{margin:0 0 10px;font-size:13px;color:#3f4466}
+.gate-win ul{margin:0 0 12px;padding-left:18px;font-size:13px;color:#14152b}.gate-win li{margin-bottom:3px}
+.gate-win .acts{display:flex;gap:8px;flex-wrap:wrap}
+.sim-end{display:none;margin-top:1rem}.sim-end.show{display:block}
+.sim-legend{font-size:.88rem;color:var(--ink-3);margin-top:.9rem}
+
+.devices .phone-frame{border-width:5px;border-radius:18px}
+
+/* buttons: text colour must win over `.links a`; secondary buttons on dark or banner backgrounds stay transparent */
+.links a.btn-primary,.links a.btn-primary:hover{color:var(--on-accent)}
+:root[data-look=product] .band .btn-ghost,:root[data-look=product] .dark .btn-ghost{background:transparent;border-color:rgba(255,255,255,.7);color:#fff}
+:root[data-look=product] .band .btn-ghost:hover,:root[data-look=product] .dark .btn-ghost:hover{background:rgba(255,255,255,.14)}
+:root[data-look=product] .dark .btn-primary{color:#fff}
+/* content is hidden for the reveal animation only when JS is running */
+/* content is always visible by default; browsers with scroll-driven animations get a gentle entrance (no JavaScript involved) */
+.rv{opacity:1;transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@supports (animation-timeline:view()){.rv{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 30%}}
+
+/* small screens: the laptop shot takes the full width, tablet and phone sit side by side at their true proportions */
+@media(max-width:760px){
+  .devices{gap:.8rem}
+  .devices>div:first-child{flex:1 1 100%}
+  .devices>div:first-child .win{width:100%}
+  .devices>div:first-child .win img{width:100%;height:auto}
+  .devices>div:not(:first-child) .win img,.devices>div:not(:first-child) .phone-frame img{height:230px}
+  .split .devices>div:first-child{flex:1 1 100%}
+  .split .devices>div:not(:first-child) .win img,.split .devices>div:not(:first-child) .phone-frame img{height:190px}
+  .win{max-width:100%}.win video{max-width:100%}
+  .s-top{padding:0 12px;gap:8px}.s-org,.s-avatar{display:none}.s-brand{font-size:17px}.s-meter span{padding:3px 8px}
+  .s-main{padding:14px 12px 20px}.s-head h3{font-size:18px}
+}
+
+/* grid children may shrink below their content, so wide images and captions never push the page wider than the screen */
+.pair,.st-body,.grid{min-width:0}.pair>*,.st-body>*,.grid>*,.fig,.win{min-width:0}
+@media(max-width:700px){.pair{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:860px){.st-body{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){
+  .tl{margin-left:0;padding-left:1.5rem}.st::before{left:calc(-1.5rem - 17px)}.st.gate::after{left:calc(-1.5rem - 10px)}
+  .devices>div:not(:first-child) .win img,.devices>div:not(:first-child) .phone-frame img{height:190px}
+  .devices .win-bar span{max-width:100%}.devices .win-bar{padding:.4rem .6rem}
+  .devices>div:not(:first-child){flex:0 0 auto}
+}
+.win-bar span{min-width:0}
+@media(max-width:760px){.devices>div:not(:first-child) .win-bar span{display:none}}
+.split .devices>div:not(:first-child) .win-bar span{display:none}
+
+/* roadmap flow */
+.rm-flow{display:flex;flex-wrap:wrap;gap:.5rem}
+.rm-chip{font:600 .82rem var(--sans);padding:.45rem .85rem;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.rm-chip.gate{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.rm-chip.new{background:transparent;border:1.5px dashed #5b4fe0;color:#4f44d8}
+.tl .devices{--dh:250px}@media(max-width:760px){.tl .devices{--dh:230px}}@media(max-width:430px){.tl .devices{--dh:170px}}
+</style>
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="index.html" aria-label="Showwork home"><i></i>Showwork</a>
+  <button class="menu-btn" aria-expanded="false" aria-controls="links">Menu</button>
+  <nav class="links" id="links" aria-label="Main">
+    <a href="simulator.html">Simulator</a>
+    <a href="pipeline.html">Pipeline</a>
+    <a href="qa.html" aria-current="page">QA proof</a>
+    <a href="orchestrator.html">Orchestrator</a>
+    <a href="trust.html">Trust & platform</a>
+    <a href="roadmap.html">Roadmap</a>
+    <a class="btn btn-primary btn-sm" href="demo.html">Book a demo</a>
+  </nav>
+</div></header>
+<main id="main">
+<section class="hero"><div class="wrap">
+  <span class="eyebrow">QA verification</span>
+  <h1>QA that says "passed" only when it was proved.</h1>
+  <p class="lede">Most coding agents grade their own work, and agents grade themselves generously. Showwork separates the writer from the tester, runs every case in a real browser, and reads each result from the recorded run, not from the agent's report.</p>
+  <div class="cta-row"><a class="btn btn-primary" href="demo.html">See a QA run live</a><a class="btn btn-ghost" href="pipeline.html">Back to the pipeline</a></div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="section-head rv"><span class="eyebrow">Why it is built this way</span><h2>Four ways AI QA goes wrong, and what we do about each.</h2></div>
+  <div class="grid g2">
+    <div class="card rv"><h4>1 · It grades its own homework</h4><p>The same agent that wrote the code decides the code is fine.</p><p><strong>So:</strong> test cases are written by a separate agent from the acceptance criteria alone, with no access to the code, while the engineer builds.</p></div>
+    <div class="card rv"><h4>2 · "Passed" means "nothing crashed"</h4><p>A case with five expectations passes when one holds.</p><p><strong>So:</strong> a case passes only when every step of its latest run passed and at least one was a real check. A pass must cite passing <em>expect</em> steps. An action alone proves nothing.</p></div>
+    <div class="card rv"><h4>3 · A broken test is blamed on the app</h4><p>A selector that matches two buttons, a timeout in the test itself.</p><p><strong>So:</strong> the harness tags each failure (locate, action, assert, page), refuses ambiguous selectors, reruns a failed case, and classifies what is left.</p></div>
+    <div class="card rv"><h4>4 · A failure gets rationalised away</h4><p>QA hits a bug, then makes an easier test that passes.</p><p><strong>So:</strong> a failure never closes itself. It stays open across fixes until the <em>same check</em> passes again, or it is accounted for as a bug, a stated explanation, or a question.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="section-head rv"><span class="eyebrow">The life of a test case</span><h2>From criterion to evidence.</h2></div>
+  <div class="tl">
+    <div class="st rv" data-n="1"><h3>Written blind, from the criteria</h3><p>Each case has an id, the criterion it covers, the data it needs, steps and an expected result. Kinds are normal, edge and sequence. When the criteria say something "stays" or "persists", code requires a sequence case; when they also name a limit (first item, empty list), an edge case too. Where criteria do not decide the answer, the expected result is "not decided: ask".</p></div>
+    <div class="st rv" data-n="2"><h3>Run in a fresh browser, at three sizes</h3><p>Each case gets its own clean browser at laptop, tablet or phone size, loaded with test data: the repository's own seed script, browser storage, or records added through the app's API, including broken saved data. Steps come from a <strong>closed vocabulary</strong> (go to, fill, click, press, wait, expect visible/text/value/focused/count/CSS). The model chooses data, never code.</p></div>
+    <div class="st rv" data-n="3"><h3>Result read from the run</h3><p><strong>Pass</strong>: every step passed and one was a check. <strong>Fail</strong>: a step failed, and it stays failed until that case passes again. <strong>Not run</strong>: anything else. A pass from before a code change no longer counts.</p></div>
+    <div class="st rv" data-n="4"><h3>Does the run test what the case says?</h3><p>A separate check judges whether a passing run actually tests its case. In an early benchmark QA passed a "broken saved data" case using a reorder test. A run that does not test the case settles nothing, and QA is told why.</p></div>
+    <div class="st rv" data-n="5"><h3>A failure is classified, not guessed</h3><p>A failed case QA did not account for is looked at by a separate call that reads the case, the steps, the failing line, the criteria and the contradictions a person already saw. The verdict is one of three, and each has a path:</p>
+      <div class="grid g3" style="margin-top:1rem"><div class="kv"><h5>App bug</h5><p style="margin:0">Raised as a bug. The engineer fixes it.</p></div><div class="kv"><h5>Broken test</h5><p style="margin:0">QA's own mistake. The case is run again with the reason.</p></div><div class="kv"><h5>Criteria unclear</h5><p style="margin:0">Becomes a question on the patch gate. The run is not stopped.</p></div></div></div>
+    <div class="st rv" data-n="6"><h3>Fix, replay, retest</h3><p>The engineer fixes, then <strong>code replays every case that passed before, exactly as recorded, with no model call</strong>. QA only works on what failed or never ran. Passes carry over while the code is unchanged.</p></div>
+    <div class="st rv" data-n="7"><h3>Reported on the gate and in the PR</h3><p>A results table, bugs with reproduction steps, open questions, and screenshots go to the person approving the patch and into the pull request. Blocker or major bugs left open refuse the patch gate altogether.</p></div>
+  </div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="section-head rv"><span class="eyebrow">Evidence you can open</span><h2>What QA leaves behind.</h2><p class="lede">Every case runs in a fresh browser and keeps its screenshots. These are example renders from an access-admin app built for this site.</p></div>
+  <div class="pair rv"><figure class="fig"><div class="win "><div class="win-bar"><i></i><i></i><i></i><span>QA · TC9 failed · laptop</span></div><img class="zoomable" src="assets/shots/qa-failed-case.png" alt="Screenshot QA attached to a failing test case" loading="lazy" width="1440" height="900"></div><figcaption><b>A failing case keeps its screenshot</b>, here a maker able to approve their own request, and the exact step that failed. It stays open until the same check passes.</figcaption></figure><figure class="fig"><div class="win "><div class="win-bar"><i></i><i></i><i></i><span>evidence · laptop</span></div><img class="zoomable" src="assets/shots/evidence-laptop.png" alt="Final evidence at laptop size" loading="lazy" width="1440" height="900"></div><figcaption><b>The final evidence</b>, recorded by the pipeline itself in a sealed container, not by QA.</figcaption></figure></div>
+  <p class="center rv" style="margin-top:2rem"><a class="btn btn-primary" href="simulator.html">Watch a QA loop in the simulator →</a></p>
+</div></section>
+
+<section class="dark"><div class="wrap">
+  <div class="section-head rv"><span class="eyebrow">Caught for real</span><h2>Examples from our own runs.</h2></div>
+  <div class="grid g3">
+    <div class="card rv"><h4>The edge a requirement missed</h4><p>A reorder feature lost keyboard focus at the first or last item, because the criteria said both "focus stays on the button" and "the button is disabled at the edge". The same pattern appears in maker-checker: "any admin can approve" versus "nobody approves their own change". The pipeline names the contradiction at gate 1 and settles it with a stated default.</p></div>
+    <div class="card rv"><h4>The pass that cited nothing</h4><p>"Corrupt settings fall back to defaults" once passed although no test loaded any data. Now a broken-data case must cite a run that actually started from test data.</p></div>
+    <div class="card rv"><h4>The scenario that proved nothing</h4><p>QA's final scenario once contained a step it never ran, and failed at every size. Now the final scenario must match a look that passed, with the same steps in order and the same data.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="section-head rv"><span class="eyebrow">What is live</span><h2>What is available and what is next.</h2></div>
+  <div class="scroll rv"><table class="tbl"><thead><tr><th>Capability</th><th>Status</th></tr></thead><tbody>
+    <tr><td>Blind test cases, real-browser runs at 3 sizes, results read from runs, replay without a model</td><td><span class="badge b-live">Available</span></td></tr>
+    <tr><td>Check that a pass tests what its case says; classification of unaccounted failures; QA loop in code</td><td><span class="badge b-live">Available</span></td></tr>
+    <tr><td>Failure kinds, flake guard (a failed case is rerun twice by code), "test issue" state</td><td><span class="badge b-val">In validation</span></td></tr>
+    <tr><td>Per-assertion verification: every assertion proved by a tagged passing check</td><td><span class="badge b-val">In validation</span></td></tr>
+    <tr><td>Evidence per assertion (screenshots for passes, not only failures), layout checks</td><td><span class="badge b-road">Roadmap</span></td></tr>
+  </tbody></table></div>
+</div></section>
+
+<section class="alt"><div class="wrap"><div class="band rv"><h2>Want to watch QA break something?</h2><div class="cta-row" style="margin:0"><a class="btn btn-primary" href="demo.html">Book a demo</a></div></div></div></section>
+
+</main>
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div><a class="brand" href="index.html"><i></i>Showwork</a><p style="margin-top:.8rem;max-width:34ch">AI agents that deliver tickets as pull requests that carry their own proof. People approve. Agents never merge.</p></div>
+    <div><h5>Product</h5><a href="pipeline.html">The pipeline</a><a href="qa.html">QA proof</a><a href="orchestrator.html">Orchestrator</a><a href="simulator.html">Simulator</a></div>
+    <div><h5>Company</h5><a href="trust.html">Trust & safety</a><a href="roadmap.html">Roadmap</a><a href="demo.html">Book a demo</a></div>
+    <div><h5>Works with</h5><a href="trust.html#integrations">Jira</a><a href="trust.html#integrations">GitHub</a><a href="trust.html#integrations">MCP connectors</a></div>
+  </div>
+  <p class="fine">Figures on this site come from our own benchmark and demo runs on a sample application and are described as such. They are not guarantees for your codebase. Product and company names mentioned belong to their owners.</p>
+</div></footer>
+<script src="assets/site.js" defer></script>
+</body></html>

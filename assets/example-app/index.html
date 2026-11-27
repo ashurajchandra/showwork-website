@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atlas Access Admin</title>
+<!-- The example "company repository" used on the Showwork website: an internal admin console with roles and a maker-checker approval flow.
+     URL options: ?as=maker|checker  ?mc=0|1 (maker-checker on)  ?bug=1 (a maker can approve their own request)   #roles  #approvals  #new-role -->
+<style>
+:root{--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9;--card:#fff;--side:#0f172a;--acc:#0d9488;--acc-d:#0f766e;--warn:#b45309;--warn-bg:#fef3c7;--ok:#047857;--ok-bg:#d1fae5;--bad:#b91c1c;--bad-bg:#fee2e2}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:var(--side);color:#cbd5e1;padding:18px 12px;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;gap:10px;align-items:center;color:#fff;font-weight:700;font-size:16px;padding:4px 10px 18px}.brand i{width:28px;height:28px;border-radius:8px;background:var(--acc);display:block}
+aside a{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;color:inherit;text-decoration:none;font-weight:500;cursor:pointer}
+aside a:hover{background:#1e293b}aside a.on{background:#134e4a;color:#fff}aside a b{background:#f59e0b;color:#111;border-radius:999px;font-size:11px;padding:0 7px;line-height:18px}
+aside .who{margin-top:auto;padding:12px;border-top:1px solid #1e293b;font-size:12px;color:#94a3b8}aside .who strong{display:block;color:#fff;font-size:13px}
+main{padding:26px 30px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+h1{margin:0;font-size:22px;letter-spacing:-.01em}.sub{color:var(--mut);margin-top:2px}
+.btn{font:600 14px system-ui;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 14px;border-radius:9px;cursor:pointer}.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn.p:hover{background:var(--acc-d)}
+.btn.sm{padding:5px 10px;font-size:13px}.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn[disabled]{opacity:.45;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse}th{font:600 12px system-ui;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);text-align:left;padding:11px 16px;background:#f8fafc;border-bottom:1px solid var(--line)}
+td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last-child td{border-bottom:0}td.n{font-weight:600}td small{display:block;color:var(--mut);font-weight:400}
+.chip{display:inline-block;font:600 11px system-ui;padding:2px 8px;border-radius:6px;background:#eef2f7;color:#334155;margin:0 4px 3px 0}
+.pill{display:inline-flex;align-items:center;gap:6px;font:600 12px system-ui;padding:3px 10px;border-radius:999px}.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.wait{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.acts{display:flex;gap:6px;flex-wrap:wrap}.note{font-size:12px;color:var(--mut);margin-top:4px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tab{padding:6px 12px;border-radius:999px;font-weight:600;font-size:13px;background:#e2e8f0;color:#334155;cursor:default}.tab.on{background:var(--ink);color:#fff}
+.banner{background:#ecfeff;border:1px solid #a5f3fc;color:#155e75;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+#drawer{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;justify-content:flex-end;z-index:20}#drawer.open{display:flex}
+.panel{width:min(520px,100%);background:#fff;height:100%;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.panel h2{margin:0;font-size:19px}label{display:grid;gap:5px;font-weight:600;font-size:13px}input[type=text],textarea{font:inherit;padding:9px 11px;border:1px solid #cbd5e1;border-radius:9px}
+.mx{width:100%}.mx td,.mx th{padding:9px 12px}.mx td:not(:first-child),.mx th:not(:first-child){text-align:center}
+.foot{margin-top:auto;display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:1px solid var(--line)}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:30;font-weight:600}
+@media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:52px 1fr}
+ aside{flex-direction:row;flex-wrap:nowrap;align-items:center;gap:2px;padding:0 14px;height:52px;overflow-x:auto;scrollbar-width:none}aside::-webkit-scrollbar{display:none}
+ .brand{padding:0 12px 0 0;font-size:15px;flex:0 0 auto}.brand i{width:24px;height:24px;border-radius:7px}
+ aside a{padding:6px 11px;font-size:13px;flex:0 0 auto;gap:6px}
+ aside .who{display:block;margin:0 0 0 auto;padding:0;border:0;font-size:0;flex:0 0 auto}aside .who strong{font-size:12px;font-weight:600;color:#94a3b8}
+ main{padding:20px 18px}}
+@media(max-width:620px){.brand span,aside .who{display:none}}
+@media(max-width:620px){td[data-l]::before{content:attr(data-l) ": ";color:var(--mut);font-size:12px}thead{display:none}table,tbody,tr,td{display:block}tr{padding:12px 14px;border-bottom:1px solid var(--line)}td{border:0;padding:3px 0}.card{border-radius:12px}.tabs{overflow:auto}}
+</style></head><body>
+<div class="app">
+  <aside id="side"></aside>
+  <main id="main"></main>
+</div>
+<div id="drawer"><div class="panel" id="panel"></div></div><div id="toast"></div>
+<script>
+const q=new URLSearchParams(location.search),MC=q.get("mc")!=="0",BUG=q.get("bug")==="1",ME=q.get("as")==="checker"?"Daniel Ortiz":"Priya Nair";
+const roles=[
+ {n:"Admin",d:"Full access to users and roles",m:4,p:["Users: edit","Roles: edit","Payments: approve"],s:"ok"},
+ {n:"Finance Approver",d:"Approves payments up to the limit",m:7,p:["Payments: approve","Reports: view"],s:MC?"wait":"ok",by:"Priya Nair"},
+ {n:"Support Agent",d:"Handles customer cases",m:23,p:["Users: view","Reports: view"],s:"ok"},
+ {n:"Auditor",d:"Read-only access for audits",m:5,p:["Users: view","Roles: view","Reports: view"],s:MC?"wait":"ok",by:"Priya Nair"},
+ {n:"Contractor",d:"Time-limited access",m:9,p:["Reports: view"],s:"ok"}];
+let reqs=[
+ {id:1,r:"Finance Approver",c:"Add permission Payments: approve",mk:"Priya Nair",t:"10 min ago",st:"wait"},
+ {id:2,r:"Support Lead",c:"Create role with Users: edit",mk:"Marcus Lee",t:"1 h ago",st:"wait"},
+ {id:3,r:"Auditor",c:"Remove permission Users: edit",mk:"Priya Nair",t:"3 h ago",st:"wait"},
+ {id:4,r:"Contractor",c:"Set access expiry to 30 days",mk:"Marcus Lee",t:"Yesterday",st:"ok",by:"Daniel Ortiz"}];
+const pend=()=>reqs.filter(r=>r.st==="wait").length;
+function side(v){document.getElementById("side").innerHTML=`<div class="brand"><i></i><span>Atlas Access</span></div><a class="${v==="roles"?"on":""}" href="#roles">Roles</a><a href="#roles">Users</a>${MC?`<a class="${v==="approvals"?"on":""}" href="#approvals">Approvals <b>${pend()}</b></a>`:""}<a href="#roles">Audit log</a><div class="who"><strong>${ME}</strong>Admin · ${MC?(ME==="Priya Nair"?"maker":"checker"):"editor"}</div>`}
+const pill=r=>r.s==="ok"?'<span class="pill ok">Active</span>':`<span class="pill wait">Pending approval</span><div class="note">Change by ${r.by}</div>`;
+function rolesView(){return `<div class="top"><div><h1>Roles &amp; permissions</h1><div class="sub">${roles.length} roles · who can do what in Atlas</div></div><button class="btn p" onclick="location.hash='#new-role'">New role</button></div>
+${MC?'<div class="banner"><strong>Maker-checker is on.</strong> Changes to roles are submitted by one admin and must be approved by a different admin.</div>':''}
+<div class="card"><table><thead><tr><th>Role</th><th>Members</th><th>Permissions</th><th>Status</th><th></th></tr></thead><tbody>${roles.map(r=>`<tr><td class="n">${r.n}<small>${r.d}</small></td><td data-l="Members">${r.m}</td><td>${r.p.map(x=>`<span class="chip">${x}</span>`).join("")}</td><td>${pill(r)}</td><td><button class="btn sm">Edit</button></td></tr>`).join("")}</tbody></table></div>`}
+function actions(r){if(r.st!=="wait")return `<span class="pill ok">Approved</span><div class="note">by ${r.by}</div>`;const own=r.mk===ME&&!BUG;
+ return `<div class="acts"><button class="btn sm ok" ${own?"disabled":""} onclick="decide(${r.id},'ok')">Approve</button><button class="btn sm" ${own?"disabled":""} onclick="decide(${r.id},'bad')">Reject</button></div>${own?'<div class="note">You submitted this request</div>':''}`}
+function apprView(){return `<div class="top"><div><h1>Approvals</h1><div class="sub">Requests waiting for a second admin</div></div></div><div class="tabs"><span class="tab on">Pending ${pend()}</span><span class="tab">Decided</span></div>
+<div class="card"><table><thead><tr><th>Request</th><th>Change</th><th>Maker</th><th>Submitted</th><th>Decision</th></tr></thead><tbody>${reqs.map(r=>`<tr><td class="n">${r.r}</td><td data-l="Change">${r.c}</td><td data-l="Maker">${r.mk}</td><td data-l="Submitted">${r.t}</td><td>${actions(r)}</td></tr>`).join("")}</tbody></table></div>`}
+function drawer(){const rows=["Users","Roles","Payments","Reports"].map(a=>`<tr><td>${a}</td>${["View","Edit","Approve"].map((c,i)=>`<td><input type="checkbox" ${(a==="Reports"&&i===0)||(a==="Users"&&i===0)?"checked":""}></td>`).join("")}</tr>`).join("");
+ return `<h2>Set up role</h2><label>Role name<input type="text" value="Support Lead"></label><label>Description<textarea rows="2">Leads the support team and manages agent access</textarea></label>
+<div class="card"><table class="mx"><thead><tr><th>Area</th><th>View</th><th>Edit</th><th>Approve</th></tr></thead><tbody>${rows}</tbody></table></div>
+${MC?'<div class="banner">This change needs a second admin to approve it before it takes effect.</div>':''}
+<div class="foot"><button class="btn" onclick="location.hash='#roles'">Cancel</button><button class="btn p" onclick="submitRole()">${MC?"Submit for approval":"Save role"}</button></div>`}
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
+function submitRole(){if(MC){reqs.unshift({id:9,r:"Support Lead",c:"Create role with Users: view, Reports: view",mk:ME,t:"just now",st:"wait"});toast("Submitted for approval");location.hash="#approvals"}else{toast("Role saved");location.hash="#roles"}}
+function decide(id,s){const r=reqs.find(x=>x.id===id);r.st=s;r.by=ME;toast(s==="ok"?"Approved":"Rejected");render()}
+function render(){const h=(location.hash||"#roles").slice(1),v=h==="approvals"&&MC?"approvals":"roles";side(v);document.getElementById("main").innerHTML=v==="approvals"?apprView():rolesView();
+ const d=document.getElementById("drawer");d.classList.toggle("open",h==="new-role");if(h==="new-role")document.getElementById("panel").innerHTML=drawer()}
+addEventListener("hashchange",render);render();
+</script></body></html>

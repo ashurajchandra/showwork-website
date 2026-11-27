@@ -1,0 +1,15 @@
+{
+  "name": "showwork-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static marketing website for the Showwork AI delivery pipeline. No framework, no runtime dependencies.",
+  "scripts": {
+    "build": "node _src/build.mjs",
+    "serve": "python3 -m http.server 4173",
+    "screenshots": "node tools/capture-screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.56.0"
+  }
+}
